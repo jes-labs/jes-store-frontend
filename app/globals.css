@@ -1,0 +1,164 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* JesStore "Electric Lime" Theme - Senior Developer Standard */
+:root {
+  --background: 0 0% 2%;              /* #050505 */
+  --foreground: 0 0% 98%;             /* #fafafa */
+  
+  --card: 0 0% 7%;                    /* #121212 */
+  --card-foreground: 0 0% 98%;
+  
+  --popover: 0 0% 7%;
+  --popover-foreground: 0 0% 98%;
+  
+  --primary: 142 71% 45%;             /* #22c55e - JesStore Green */
+  --primary-foreground: 0 0% 100%;
+  
+  --secondary: 217 91% 60%;           /* #3b82f6 - JesStore Blue */
+  --secondary-foreground: 0 0% 100%;
+  
+  --muted: 0 0% 15%;                  /* #262626 */
+  --muted-foreground: 0 0% 64%;
+  
+  --accent: 142 71% 45%;
+  --accent-foreground: 0 0% 100%;
+  
+  --destructive: 0 100% 50%;
+  --destructive-foreground: 0 0% 100%;
+  
+  --border: 0 0% 15%;
+  --input: 0 0% 15%;
+  --ring: 142 71% 45%;
+  
+  --radius: 0.75rem;
+
+  /* Brand Specifics */
+  --jes-green: 142 71% 45%;
+  --jes-blue: 217 91% 60%;
+  --jes-gold: 48 96% 53%;             /* #f9c22e */
+  --jes-surface: 0 0% 7%;
+  --jes-surface-highlight: 0 0% 12%;
+}
+
+@theme inline {
+  --font-sans: "Outfit", "Plus Jakarta Sans", ui-sans-serif, system-ui;
+  --font-heading: "Outfit", sans-serif;
+  --font-body: "Plus Jakarta Sans", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-jes-green: hsl(var(--jes-green));
+  --color-jes-blue: hsl(var(--jes-blue));
+  --color-jes-gold: hsl(var(--jes-gold));
+  
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-body;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading tracking-tight;
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    background: rgba(18, 18, 18, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .glass-card:hover {
+    background: rgba(18, 18, 18, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .grid-pattern {
+    background-image: 
+      linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  .glow-green {
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
+  }
+
+  .glow-blue {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60;
+  }
+
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
+
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  @keyframes marquee-reverse {
+    0% { transform: translateX(-50%); }
+    100% { transform: translateX(0); }
+  }
+
+  .animate-marquee {
+    animation: marquee 40s linear infinite;
+  }
+
+  .animate-marquee-reverse {
+    animation: marquee-reverse 40s linear infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
