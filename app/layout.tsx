@@ -23,7 +23,7 @@ const fontMono = JetBrains_Mono({
 })
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://jesstore.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://jesstore.vercel.app'),
   title: {
     default: "JesStore - Web3 Store Management for African SMEs",
     template: "%s | JesStore"
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://jesstore.com",
+    url: "https://jesstore.vercel.app",
     title: "JesStore - Web3 Store Management for African SMEs",
     description: "Empowering African merchants with decentralized commerce tools. Instant settlements, zero commission, global reach.",
     siteName: "JesStore",
