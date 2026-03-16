@@ -1,6 +1,6 @@
 # JesStore - Web3 Store Management Platform
 
-JesStore is a modern, Web3-native store management system built for African SMEs. It combines traditional POS functionality with blockchain-based payments via Celo's MiniPay, providing a seamless, affordable way for small business owners to manage inventory, process sales, and accept crypto payments.
+JesStore is a modern, Web3-native store management system built for African SMEs. It combines traditional POS functionality with blockchain-based payments, providing a seamless, affordable way for small business owners to manage inventory, process sales, and accept stablecoin payments (USDC/USDT) from any EVM-compatible chain.
 
 ## Features
 
@@ -11,16 +11,15 @@ JesStore is a modern, Web3-native store management system built for African SMEs
 - **Receipt Generation**: Print and digital receipts with transaction details
 
 ### Payment Methods
-- **Cash**: Traditional payment tracking
-- **Card**: Credit/debit card processing (extensible)
-- **MiniPay**: Celo blockchain payments via phone number - no account needed
-- **Crypto**: Direct Celo (CELO) and Celo Dollar (cUSD) payments
+- **Cash**: Traditional fiat payment tracking for in-person sales
+- **Stablecoins**: Support for USDC and USDT from any EVM-compatible chain (Polygon, Celo, Base, Ethereum, etc.)
+- **Direct Crypto**: Support for native assets like CELO, MATIC, etc.
 
 ### Web3 Integration
-- Built on Celo blockchain for fast, low-cost transactions
-- MiniPay integration for accessible mobile payments
-- Crypto wallet support for store receivables
-- Smart contract-ready architecture
+- Multi-chain EVM support for settlement
+- Stablecoin-first architecture (USDC/USDT)
+- Low-cost transaction verification
+- Smart contract-ready settlement layer
 
 ## Tech Stack
 
@@ -120,9 +119,9 @@ Create a `.env.local` file with:
 # API Configuration
 NEXT_PUBLIC_API_URL=http://localhost:3000/api
 
-# Celo/MiniPay Configuration
-NEXT_PUBLIC_MINIPAY_APP_ID=your_app_id
-NEXT_PUBLIC_CELO_NETWORK=testnet
+# Web3/Blockchain Configuration
+NEXT_PUBLIC_DEFAULT_CHAIN_ID=137
+NEXT_PUBLIC_SUPPORTED_CHAINS=[137, 42220, 8453]
 NEXT_PUBLIC_STORE_WALLET_ADDRESS=0x...
 
 # Database (when integrated)
@@ -179,7 +178,7 @@ SMTP_PASSWORD=your_password
 - General account settings
 - Store configuration
 - Payment method setup
-- MiniPay/Celo wallet config
+- Multi-chain wallet configuration
 
 ## API Endpoints
 
@@ -211,34 +210,6 @@ pnpm start
 pnpm lint
 ```
 
-## TODO - Next Steps for Implementation
-
-### Backend Integration
-- [ ] Connect to database (PostgreSQL/MongoDB)
-- [ ] Implement user authentication with JWT
-- [ ] Create product and order models
-- [ ] Set up payment processing
-
-### Celo/MiniPay
-- [ ] Integrate ContractKit for blockchain interaction
-- [ ] Set up Celo wallet management
-- [ ] Implement transaction verification
-- [ ] Configure webhook receivers
-
-### Features
-- [ ] Receipt printing functionality
-- [ ] Email notifications
-- [ ] Multi-currency support
-- [ ] Advanced analytics and reports
-- [ ] Bulk inventory import/export
-- [ ] Staff management and permissions
-
-### Testing
-- [ ] Unit tests for utilities
-- [ ] Integration tests for API
-- [ ] E2E tests for critical flows
-- [ ] Payment transaction testing
-
 ## Architecture Decisions
 
 ### Why Web3?
@@ -247,11 +218,11 @@ pnpm lint
 - **Accessible**: No bank account needed, works with just a phone number
 - **Transparent**: All transactions recorded on immutable ledger
 
-### Why MiniPay?
-- **Familiar UX**: Uses phone numbers instead of wallet addresses
-- **Mobile-first**: Optimized for smartphones in emerging markets
-- **No downloads**: Works directly in Safari/Chrome
-- **Single click**: Seamless payment experience
+### Why Stablecoins?
+- **Universal Access**: Accept USDC/USDT from any EVM-compatible wallet
+- **Instant Settlement**: No 2-3 day waiting periods like traditional payment processors
+- **Low Fees**: Utilize L2s (Polygon, Base) or high-performance L1s (Celo) for sub-cent fees
+- **Global Reach**: Accept payments from customers anywhere in the world
 
 ### Zustand for State
 - Lightweight alternative to Redux
@@ -291,9 +262,6 @@ pnpm lint
 4. Test payment flows thoroughly
 5. Document new API endpoints
 
-## License
-
-[Your License Here]
 
 ## Support
 
