@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next"
 import { Outfit, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google"
 import "./globals.css"
 import ReactQueryProvider from "@/components/providers/ReactQueryProvider"
+import AppKitProvider from "@/components/providers/AppKitProvider"
 import { Toaster } from "@/components/ui/sonner"
 
 const fontHeading = Outfit({
@@ -76,10 +77,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`dark ${fontHeading.variable} ${fontBody.variable} ${fontMono.variable}`}>
       <body className="font-body antialiased min-h-screen bg-background text-foreground">
-        <ReactQueryProvider>
-          {children}
-          <Toaster richColors closeButton position="bottom-right" />
-        </ReactQueryProvider>
+        <AppKitProvider>
+          <ReactQueryProvider>
+            {children}
+            <Toaster richColors closeButton position="bottom-right" />
+          </ReactQueryProvider>
+        </AppKitProvider>
       </body>
     </html>
   )

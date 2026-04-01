@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import DashboardShell from '@/components/layout/DashboardShell'
+import AuthGuard from '@/components/layout/AuthGuard'
 
 export const metadata: Metadata = {
   title: 'Dashboard - JesStore',
@@ -12,8 +13,10 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   return (
-    <DashboardShell>
-      {children}
-    </DashboardShell>
+    <AuthGuard>
+      <DashboardShell>
+        {children}
+      </DashboardShell>
+    </AuthGuard>
   )
 }

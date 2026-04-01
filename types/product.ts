@@ -11,22 +11,31 @@ export interface Category {
 export interface Product {
   id: string;
   storeId: string;
+  // camelCase (frontend / transformed)
   name: string;
   description?: string;
-  categoryId: string;
-  category: Category | string;
-  price: number; // USDT amount in cents
+  categoryId?: string;
+  category?: Category | string;
+  price: number;
   costPrice?: number;
-  sku: string;
+  sku?: string;
   barcode?: string;
-  stock: number;
-  lowStockAlert: number;
-  image?: string; // IPFS/Pinata URL
+  stock?: number;
+  lowStockAlert?: number;
+  image?: string;
   images?: string[];
-  status: 'active' | 'inactive' | 'discontinued' | 'draft' | 'out_of_stock';
+  status?: 'active' | 'inactive' | 'discontinued' | 'draft' | 'out_of_stock';
   isActive?: boolean;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
+  // snake_case (backend response)
+  product_name?: string;
+  cost_price?: number | string;
+  quantity?: number;
+  is_active?: boolean;
+  low_stock_alert?: number;
+  category_id?: string;
+  image_cid?: string;
 }
 
 export interface StockAdjustment {

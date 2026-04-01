@@ -1,55 +1,39 @@
 import { apiClient } from './client'
-import { Order, CreateOrderPayload } from '@/types/order'
-import { ApiResponse, PaginatedResponse } from '@/types/api'
+import { Order, CreateOrderPayload, OrderFilters } from '@/types/order'
+import { Receipt } from '@/types/receipt'
 
 /**
  * Order & Sales Service
+ * Backend routes:
+ *   POST  /orders                                (not store-scoped)
+ *   GET   /stores/:storeId/orders
+ *   GET   /stores/:storeId/orders/:id
+ *   PATCH /stores/:storeId/orders/:id/status
+ *   GET   /stores/:storeId/orders/:id/receipt
  */
 export const ordersApi = {
-  /**
-   * List orders for a store (paginated)
-   */
-  getOrders: async (params?: {
-    page?: number;
-    limit?: number;
-    status?: string;
-    customerId?: string;
-    startDate?: string;
-    endDate?: string;
-  }): Promise<ApiResponse<PaginatedResponse<Order>>> => {
-    const response = await apiClient.get<ApiResponse<PaginatedResponse<Order>>>('/orders', { params })
-    return response.data
+  createOrder: async (payload: CreateOrderPayload): Promise<Order> => {
+    const response = await apiClient.post<any>('/orders', payload)
+    return response.data?.order ?? response.data
   },
 
-  /**
-   * Get order details by ID
-   */
-  getOrder: async (id: string): Promise<ApiResponse<Order>> => {
-    const response = await apiClient.get<ApiResponse<Order>>(`/api/orders/${id}`)
-    return response.data
+  getOrders: async (storeId: string, params?: OrderFilters): Promise<Order[]> => {
+    const response = await apiClient.get<any>(`/stores/${storeId}/orders`, { params })
+    return response.data?.orders ?? response.data
   },
 
-  /**
-   * Create a new order (Checkout)
-   */
-  createOrder: async (payload: CreateOrderPayload): Promise<ApiResponse<Order>> => {
-    const response = await apiClient.post<ApiResponse<Order>>('/orders', payload)
-    return response.data
+  getOrder: async (storeId: string, id: string): Promise<Order> => {
+    const response = await apiClient.get<any>(`/stores/${storeId}/orders/${id}`)
+    return response.data?.order ?? response.data
   },
 
-  /**
-   * Update order status
-   */
-  updateStatus: async (id: string, status: Order['status']): Promise<ApiResponse<Order>> => {
-    const response = await apiClient.patch<ApiResponse<Order>>(`/orders/${id}/status`, { status })
-    return response.data
+  updateStatus: async (storeId: string, id: string, status: string): Promise<Order> => {
+    const response = await apiClient.patch<any>(`/stores/${storeId}/orders/${id}/status`, { status })
+    return response.data?.order ?? response.data
   },
 
-  /**
-   * Process payment for an order
-   */
-  processPayment: async (id: string, paymentDetails: any): Promise<ApiResponse<Order>> => {
-    const response = await apiClient.post<ApiResponse<Order>>(`/orders/${id}/payment`, paymentDetails)
-    return response.data
+  getOrderReceipt: async (storeId: string, orderId: string): Promise<Receipt> => {
+    const response = await apiClient.get<any>(`/stores/${storeId}/orders/${orderId}/receipt`)
+    return response.data?.receipt ?? response.data
   },
 }

@@ -111,7 +111,12 @@ export function OrderTable({ orders, onView }: OrderTableProps) {
               </TableCell>
               <TableCell>
                 <span className="text-[11px] text-muted-foreground font-medium">
-                  {format(new Date(order.date), 'MMM d, yyyy')}
+                  {(() => {
+                    const raw = order.date
+                    if (!raw) return '—'
+                    const d = new Date(raw)
+                    return isNaN(d.getTime()) ? '—' : format(d, 'MMM d, yyyy')
+                  })()}
                 </span>
               </TableCell>
               <TableCell className="text-right">

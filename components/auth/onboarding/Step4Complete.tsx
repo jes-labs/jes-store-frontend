@@ -10,7 +10,7 @@ import Link from 'next/link'
 export default function Step4Complete() {
   const { data } = useOnboardingStore()
   
-  const storeUrl = `app.jesstore.io/store/${data.storeSlug}`
+  const storeUrl = `app.jesstore.vercel.app/store/${data.storeSlug}`
 
   return (
     <div className="glass-card rounded-2xl p-8 sm:p-12 border border-white/8 shadow-2xl relative overflow-hidden">

@@ -2,6 +2,10 @@
 
 import React from 'react'
 import { useOnboardingStore } from '@/store/onboardingStore'
+import { useAuthStore } from '@/store/authStore'
+import { storesApi } from '@/lib/api/stores'
+import { toast } from 'sonner'
+import { getApiErrorMessage } from '@/lib/utils/handleApiError'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
@@ -28,6 +32,27 @@ const categories = [
 
 export default function Step3StoreSetup() {
   const { data, updateData, nextStep, prevStep } = useOnboardingStore()
+  const setActiveStoreId = useAuthStore((s) => s.setActiveStoreId)
+  const [isLoading, setIsLoading] = React.useState(false)
+
+  const handleFinishSetup = async () => {
+    if (!data.category) return
+    setIsLoading(true)
+    try {
+      const store = await storesApi.createStore({
+        name: data.storeName,
+        description: data.storeDescription || undefined,
+        walletAddress: data.walletAddress,
+        country: 'Nigeria',
+      })
+      setActiveStoreId(store.id)
+      nextStep()
+    } catch (error) {
+      toast.error(getApiErrorMessage(error))
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -143,13 +168,22 @@ export default function Step3StoreSetup() {
             <ArrowLeft className="w-4 h-4 mr-2" />
             <span>Go Back</span>
           </Button>
-          <Button 
-            onClick={nextStep}
-            disabled={!data.category}
+          <Button
+            onClick={handleFinishSetup}
+            disabled={!data.category || isLoading}
             className="flex-[2] h-14 bg-primary hover:bg-primary/90 text-white rounded-xl font-bold shadow-lg shadow-primary/20 transition-all group"
           >
-            <span>Finish Setup</span>
-            <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span>Creating store...</span>
+              </div>
+            ) : (
+              <>
+                <span>Finish Setup</span>
+                <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              </>
+            )}
           </Button>
         </div>
       </div>

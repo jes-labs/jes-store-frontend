@@ -66,7 +66,7 @@ export default function DemoSection() {
                   <div className="w-2.5 h-2.5 rounded-full bg-white/10" />
                </div>
                <div className="bg-white/5 px-4 py-1 rounded-md text-[10px] text-muted-foreground font-mono">
-                  app.jesstore.io/dashboard
+                  jesstore.vercel.app/dashboard
                </div>
                <div className="flex items-center gap-3">
                   <Bell className="w-3.5 h-3.5 text-muted-foreground" />

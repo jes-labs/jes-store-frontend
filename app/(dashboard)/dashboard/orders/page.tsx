@@ -1,67 +1,41 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { SearchInput } from '@/components/shared/SearchInput'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-
-// Mock data
-const mockOrders: any[] = [
-  {
-    id: '1',
-    orderRef: 'ORD-20260315-001',
-    customerName: 'John Doe',
-    date: new Date().toISOString(),
-    items: 3,
-    total: 125.5,
-    paymentMethod: 'MiniPay (USDC)',
-    status: 'completed' as const,
-  },
-  {
-    id: '2',
-    orderRef: 'ORD-20260315-002',
-    customerName: 'Jane Smith',
-    date: new Date(Date.now() - 86400000).toISOString(),
-    items: 1,
-    total: 50.0,
-    paymentMethod: 'Cash',
-    status: 'paid' as const,
-  },
-  {
-    id: '3',
-    orderRef: 'ORD-20260315-003',
-    customerName: 'Mike Johnson',
-    date: new Date(Date.now() - 172800000).toISOString(),
-    items: 5,
-    total: 250.75,
-    paymentMethod: 'Bank Transfer',
-    status: 'pending' as const,
-  },
-]
-
-import { useEffect } from 'react'
 import { TableSkeleton } from '@/components/shared/LoadingSkeletons'
 import { OrderTable } from '@/components/features/orders/OrderTable'
+import { useOrders } from '@/hooks/useOrders'
 
 export default function OrdersPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [status, setStatus] = useState('all')
-  const [isLoading, setIsLoading] = useState(true)
 
-  useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1500)
-    return () => clearTimeout(timer)
-  }, [])
+  const { data: orders = [], isLoading } = useOrders()
 
-  const filteredOrders = mockOrders.filter((order) => {
-    const matchesSearch =
-      order.orderRef.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      order.customerName.toLowerCase().includes(searchQuery.toLowerCase())
+  // Map backend snake_case fields → OrderTable shape
+  const mappedOrders = useMemo(() => orders.map((o: any) => ({
+    id: o.id,
+    orderRef: o.order_ref ?? o.orderRef ?? o.id,
+    customerName: o.customer_name ?? o.customerName ?? o.customer_id ?? '—',
+    items: o.items?.length ?? o.item_count ?? o.items ?? 0,
+    total: typeof o.total_amount === 'string' ? parseFloat(o.total_amount) : (o.total_amount ?? o.total ?? 0),
+    paymentMethod: o.payment_method ?? o.paymentMethod ?? '',
+    status: o.status ?? 'pending',
+    date: o.created_at ?? o.createdAt ?? o.date ?? '',
+    chain: o.chain ?? undefined,
+  })), [orders])
 
-    const matchesStatus = status === 'all' || order.status === status
-
-    return matchesSearch && matchesStatus
-  })
+  const filteredOrders = useMemo(() => {
+    return mappedOrders.filter((order) => {
+      const matchesSearch =
+        order.orderRef.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        order.customerName.toLowerCase().includes(searchQuery.toLowerCase())
+      const matchesStatus = status === 'all' || order.status === status
+      return matchesSearch && matchesStatus
+    })
+  }, [mappedOrders, searchQuery, status])
 
   return (
     <main className="space-y-8 animate-in fade-in duration-700">
@@ -70,7 +44,6 @@ export default function OrdersPage() {
         description="View and manage all sales orders"
       />
 
-      {/* Filters */}
       <div className="space-y-4">
         <div className="max-w-md">
           <SearchInput
@@ -84,8 +57,8 @@ export default function OrdersPage() {
           <TabsList className="bg-muted/50 p-1 rounded-xl">
             <TabsTrigger value="all" className="rounded-lg px-6 font-bold uppercase text-[10px] tracking-widest">All Orders</TabsTrigger>
             <TabsTrigger value="pending" className="rounded-lg px-6 font-bold uppercase text-[10px] tracking-widest">Pending</TabsTrigger>
-            <TabsTrigger value="paid" className="rounded-lg px-6 font-bold uppercase text-[10px] tracking-widest">Paid</TabsTrigger>
-            <TabsTrigger value="completed" className="rounded-lg px-6 font-bold uppercase text-[10px] tracking-widest">Completed</TabsTrigger>
+            <TabsTrigger value="confirmed" className="rounded-lg px-6 font-bold uppercase text-[10px] tracking-widest">Confirmed</TabsTrigger>
+            <TabsTrigger value="delivered" className="rounded-lg px-6 font-bold uppercase text-[10px] tracking-widest">Delivered</TabsTrigger>
             <TabsTrigger value="cancelled" className="rounded-lg px-6 font-bold uppercase text-[10px] tracking-widest">Cancelled</TabsTrigger>
           </TabsList>
 

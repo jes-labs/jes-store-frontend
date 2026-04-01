@@ -43,7 +43,7 @@ export default function ContactPage() {
                   </div>
 
                   <div className="space-y-6">
-                     <ContactItem icon={Mail} title="Email Correspondence" value="hello@jesstore.io" link="mailto:hello@jesstore.io" />
+                     <ContactItem icon={Mail} title="Email Correspondence" value="hello@jesstore.vercel.app" link="mailto:hello@jesstore.vercel.app" />
                      <ContactItem icon={MessageCircle} title="WhatsApp Sync" value="+234 81 234 567 89" link="https://wa.me/2348123456789" />
                      <ContactItem icon={MapPin} title="West African HQ" value="Victoria Island, Lagos, Nigeria" />
                   </div>

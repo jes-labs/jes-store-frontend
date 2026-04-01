@@ -1,46 +1,67 @@
 import { apiClient } from './client'
-import { Store } from '@/types/store'
-import { ApiResponse } from '@/types/api'
+import { Store, CreateStorePayload, UpdateStorePayload } from '@/types/store'
 
 /**
  * Store Management Service
+ * Backend routes:
+ *   GET    /stores/mine
+ *   POST   /stores
+ *   GET    /stores/:id
+ *   PUT    /stores/:id
+ *   DELETE /stores/:id
+ *   GET    /stores/:id/analytics
  */
 export const storesApi = {
   /**
-   * Get store details by ID or slug
+   * Get all stores owned by the authenticated user
    */
-  getStore: async (idOrSlug: string): Promise<ApiResponse<Store>> => {
-    const response = await apiClient.get<ApiResponse<Store>>(`/stores/${idOrSlug}`)
-    return response.data
+  getMyStores: async (): Promise<Store[]> => {
+    const response = await apiClient.get<any>('/stores/mine')
+    return response.data?.stores ?? response.data
   },
 
   /**
-   * Update store settings
+   * Create a new store
    */
-  updateStore: async (id: string, payload: Partial<Store>): Promise<ApiResponse<Store>> => {
-    const response = await apiClient.patch<ApiResponse<Store>>(`/stores/${id}`, payload)
-    return response.data
+  createStore: async (payload: CreateStorePayload): Promise<Store> => {
+    const body = {
+      store_name: payload.name,
+      description: payload.description,
+      owner_address: payload.walletAddress?.toLowerCase(),
+      country: payload.country,
+    }
+    const response = await apiClient.post<any>('/stores', body)
+    return response.data?.store ?? response.data
   },
 
   /**
-   * Upload store logo
+   * Get a store by ID (public)
    */
-  uploadLogo: async (id: string, file: File): Promise<ApiResponse<{ url: string }>> => {
-    const formData = new FormData()
-    formData.append('file', file)
-    const response = await apiClient.post<ApiResponse<{ url: string }>>(`/stores/${id}/logo`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    })
-    return response.data
+  getStore: async (id: string): Promise<Store> => {
+    const response = await apiClient.get<any>(`/stores/${id}`)
+    return response.data?.store ?? response.data
   },
 
   /**
-   * Get store analytics summary
+   * Update store details (owner only)
    */
-  getAnalytics: async (id: string): Promise<ApiResponse<any>> => {
-    const response = await apiClient.get<ApiResponse<any>>(`/stores/${id}/analytics`)
-    return response.data
+  updateStore: async (id: string, payload: UpdateStorePayload): Promise<Store> => {
+    const response = await apiClient.put<any>(`/stores/${id}`, payload)
+    return response.data?.store ?? response.data
+  },
+
+  /**
+   * Delete a store (owner only)
+   */
+  deleteStore: async (id: string): Promise<void> => {
+    await apiClient.delete(`/stores/${id}`)
+  },
+
+  /**
+   * Get analytics summary for a store
+   */
+  getAnalytics: async (storeId: string): Promise<any> => {
+    const response = await apiClient.get<any>(`/stores/${storeId}/analytics`)
+    return response.data?.analytics ?? response.data
   },
 }

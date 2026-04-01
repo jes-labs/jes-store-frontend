@@ -28,19 +28,43 @@ export interface AuthClaims {
 }
 
 export interface LoginPayload {
-  email: string;
-  password: string;
+  wallet_address: string;
 }
 
 export interface RegisterPayload {
-  fullName: string;
-  businessName?: string;
+  wallet_address: string;
+  user_name: string;
   email: string;
-  password: string;
-  walletAddress?: string;
+  phone_number?: string;
+  house_address?: string;
 }
 
 export interface ResetPasswordPayload {
   token: string;
   newPassword: string;
+}
+
+// Backend response shapes (snake_case from API)
+export interface BackendUser {
+  id: string;
+  email: string;
+  user_name: string;
+  wallet_address?: string;
+  phone_number?: string;
+  house_address?: string;
+}
+
+export interface LoginResponse {
+  token: string;
+  user: BackendUser;
+  role: string;
+}
+
+export interface RegisterResponse {
+  id: string;
+  email: string;
+  user_name: string;
+  wallet_address?: string;
+  phone_number?: string;
+  house_address?: string;
 }

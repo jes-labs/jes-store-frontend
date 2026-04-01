@@ -9,7 +9,7 @@ export const formatCurrency = (
   options?: { showSymbol?: boolean; decimals?: number }
 ): string => {
   const { showSymbol = true, decimals = 2 } = options || {};
-  const amount = amountInCents / 100;
+  const amount = amountInCents;
 
   const formatted = new Intl.NumberFormat('en-US', {
     style: 'decimal',

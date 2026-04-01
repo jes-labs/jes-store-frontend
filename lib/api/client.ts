@@ -19,52 +19,34 @@ export const getAxiosInstance = (): AxiosInstance => {
     },
   });
 
-  // Request interceptor: add auth token
+  // Request interceptor: add auth token (skip for auth + public endpoints)
   axiosInstance.interceptors.request.use((axiosConfig) => {
-    const authStore = useAuthStore.getState();
-    const token = authStore.accessToken;
-
-    if (token) {
-      axiosConfig.headers.Authorization = `Bearer ${token}`;
+    const url = axiosConfig.url ?? '';
+    const isPublicRoute = url.startsWith('/auth/') || url.startsWith('/receipts/') || url.startsWith('/store/');
+    // If caller explicitly set Authorization to empty string, honour it
+    const callerExplicitlySkipped = axiosConfig.headers.Authorization === '';
+    if (!isPublicRoute && !callerExplicitlySkipped) {
+      const authStore = useAuthStore.getState();
+      const token = authStore.accessToken;
+      if (token) {
+        axiosConfig.headers.Authorization = `Bearer ${token}`;
+      }
     }
 
     return axiosConfig;
   });
 
-  // Response interceptor: handle 401 and token refresh
+  // Response interceptor: handle 401 by logging out (skip for auth endpoints)
   axiosInstance.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {
-      const originalRequest = error.config;
-
-      if (error.response?.status === 401 && originalRequest) {
+      const url = (error.config?.url ?? '');
+      const isAuthRoute = url.startsWith('/auth/');
+      const isDashboardRoute = typeof window !== 'undefined' && window.location.pathname.startsWith('/dashboard');
+      if (error.response?.status === 401 && !isAuthRoute && isDashboardRoute) {
         const authStore = useAuthStore.getState();
-        const refreshToken = authStore.refreshToken;
-
-        if (refreshToken && !originalRequest.url?.includes('/api/auth/refresh')) {
-          try {
-            // Attempt to refresh token
-            // TODO: Implement actual refresh logic or mock endpoint in app/api/auth/refresh/route.ts
-            const response = await axios.post(
-              `${config.apiUrl}/api/auth/refresh`,
-              { refreshToken },
-              { timeout: 5000 }
-            );
-
-            const { accessToken } = response.data;
-            authStore.setAccessToken(accessToken);
-
-            // Retry original request with new token
-            if (originalRequest.headers) {
-              originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-            }
-            return axiosInstance!(originalRequest);
-          } catch {
-            // Token refresh failed, logout user
-            authStore.logout();
-            window.location.href = '/login';
-          }
-        }
+        authStore.logout();
+        window.location.href = '/login';
       }
 
       return Promise.reject(error);

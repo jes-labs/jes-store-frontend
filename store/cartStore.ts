@@ -50,7 +50,7 @@ export const useCartStore = create<CartStoreState>((set, get) => ({
   discount: 0,
   discountType: 'fixed',
   discountValue: 0,
-  paymentMethod: 'cash',
+  paymentMethod: 'crypto',
   selectedChain: null,
 
   addItem: (product: Product, quantity: number) => {
@@ -124,7 +124,7 @@ export const useCartStore = create<CartStoreState>((set, get) => ({
       customerId: undefined,
       discountType: 'fixed',
       discountValue: 0,
-      paymentMethod: 'cash',
+      paymentMethod: 'crypto',
       selectedChain: null,
     });
   },

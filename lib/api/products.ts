@@ -1,53 +1,45 @@
 import { apiClient } from './client'
-import { Product } from '@/types/product'
-import { ApiResponse, PaginatedResponse } from '@/types/api'
+import { Product, ProductFilters } from '@/types/product'
 
 /**
- * Inventory Management Service
+ * Product/Inventory Service
+ * All routes are store-scoped: /stores/:storeId/products/...
  */
 export const productsApi = {
-  /**
-   * List all products for a store (paginated)
-   */
-  getProducts: async (params?: { 
-    page?: number; 
-    limit?: number; 
-    search?: string;
-    category?: string;
-  }): Promise<ApiResponse<PaginatedResponse<Product>>> => {
-    const response = await apiClient.get<ApiResponse<PaginatedResponse<Product>>>('/api/products', { params })
-    return response.data
+  getProducts: async (storeId: string, params?: ProductFilters): Promise<Product[]> => {
+    const response = await apiClient.get<any>(`/stores/${storeId}/products`, { params })
+    return response.data?.products ?? response.data
   },
 
-  /**
-   * Get product details by ID
-   */
-  getProduct: async (id: string): Promise<ApiResponse<Product>> => {
-    const response = await apiClient.get<ApiResponse<Product>>(`/api/products/${id}`)
-    return response.data
+  getProduct: async (storeId: string, id: string): Promise<Product> => {
+    const response = await apiClient.get<any>(`/stores/${storeId}/products/${id}`)
+    return response.data?.product ?? response.data
   },
 
-  /**
-   * Create a new product
-   */
-  createProduct: async (payload: Partial<Product>): Promise<ApiResponse<Product>> => {
-    const response = await apiClient.post<ApiResponse<Product>>('/api/products', payload)
-    return response.data
+  createProduct: async (storeId: string, payload: Partial<Product>): Promise<Product> => {
+    const response = await apiClient.post<any>(`/stores/${storeId}/products`, payload)
+    return response.data?.product ?? response.data
   },
 
-  /**
-   * Update an existing product
-   */
-  updateProduct: async (id: string, payload: Partial<Product>): Promise<ApiResponse<Product>> => {
-    const response = await apiClient.patch<ApiResponse<Product>>(`/api/products/${id}`, payload)
-    return response.data
+  updateProduct: async (storeId: string, id: string, payload: Partial<Product>): Promise<Product> => {
+    const response = await apiClient.put<any>(`/stores/${storeId}/products/${id}`, payload)
+    return response.data?.product ?? response.data
   },
 
-  /**
-   * Delete a product
-   */
-  deleteProduct: async (id: string): Promise<ApiResponse> => {
-    const response = await apiClient.delete<ApiResponse>(`/api/products/${id}`)
-    return response.data
+  updateStock: async (storeId: string, id: string, quantityDelta: number, reason?: string): Promise<Product> => {
+    const response = await apiClient.patch<any>(`/stores/${storeId}/products/${id}/stock`, {
+      quantity_delta: quantityDelta,
+      reason,
+    })
+    return response.data?.product ?? response.data
+  },
+
+  getLowStock: async (storeId: string): Promise<Product[]> => {
+    const response = await apiClient.get<any>(`/stores/${storeId}/low-stock`)
+    return response.data?.products ?? response.data
+  },
+
+  deleteProduct: async (storeId: string, id: string): Promise<void> => {
+    await apiClient.delete(`/stores/${storeId}/products/${id}`)
   },
 }

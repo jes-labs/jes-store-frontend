@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { MetricCard } from "@/components/features/analytics/MetricCard"
 import { RevenueChart } from "@/components/features/analytics/RevenueChart"
 import { TopProductsChart } from "@/components/features/analytics/TopProductsChart"
@@ -7,17 +8,26 @@ import { PageHeader } from "@/components/shared/PageHeader"
 import { DollarSign, ShoppingBag, Users, TrendingUp, Calendar } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useAnalytics } from '@/hooks/useAnalytics'
 
 export default function AnalyticsPage() {
+  const [period, setPeriod] = useState('30d')
+  const { data: analytics, isLoading } = useAnalytics()
+
+  const totalRevenue = analytics ? `₦${parseFloat(analytics.total_revenue ?? '0').toLocaleString()}` : '—'
+  const totalOrders = analytics?.total_orders?.toString() ?? '—'
+  const totalCustomers = analytics?.total_customers?.toString() ?? '—'
+  const netProfit = analytics ? `₦${parseFloat(analytics.net_profit ?? '0').toLocaleString()}` : '—'
+
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold font-display tracking-tight">Analytics</h1>
-          <p className="text-muted-foreground pt-1">Deep dive into your store's performance</p>
+          <p className="text-muted-foreground pt-1">Deep dive into your store&apos;s performance</p>
         </div>
         <div className="flex items-center gap-3">
-          <Select defaultValue="30d">
+          <Select value={period} onValueChange={setPeriod}>
             <SelectTrigger className="w-[180px] rounded-xl border-border/50 bg-card">
               <Calendar className="w-4 h-4 mr-2 text-muted-foreground" />
               <SelectValue placeholder="Date Range" />
@@ -34,33 +44,33 @@ export default function AnalyticsPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <MetricCard 
-          title="Total Revenue" 
-          value="$45,231.89" 
-          change={12.5} 
-          icon={DollarSign} 
+        <MetricCard
+          title="Total Revenue"
+          value={isLoading ? '…' : totalRevenue}
+          change={0}
+          icon={DollarSign}
           trend="up"
         />
-        <MetricCard 
-          title="Total Orders" 
-          value="1,284" 
-          change={8.2} 
-          icon={ShoppingBag} 
+        <MetricCard
+          title="Total Orders"
+          value={isLoading ? '…' : totalOrders}
+          change={0}
+          icon={ShoppingBag}
           trend="up"
         />
-        <MetricCard 
-          title="New Customers" 
-          value="482" 
-          change={-3.1} 
-          icon={Users} 
-          trend="down"
-        />
-        <MetricCard 
-          title="Avg. Order Value" 
-          value="$35.22" 
-          change={2.4} 
-          icon={TrendingUp} 
+        <MetricCard
+          title="Total Customers"
+          value={isLoading ? '…' : totalCustomers}
+          change={0}
+          icon={Users}
           trend="up"
+        />
+        <MetricCard
+          title="Net Profit"
+          value={isLoading ? '…' : netProfit}
+          change={0}
+          icon={TrendingUp}
+          trend={parseFloat(analytics?.net_profit ?? '0') >= 0 ? 'up' : 'down'}
         />
       </div>
 
@@ -69,7 +79,7 @@ export default function AnalyticsPage() {
           <RevenueChart />
         </div>
         <div className="lg:col-span-1">
-          <TopProductsChart />
+          <TopProductsChart topProducts={analytics?.top_products} isLoading={isLoading} />
         </div>
       </div>
     </div>

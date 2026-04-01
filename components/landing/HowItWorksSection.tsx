@@ -116,7 +116,7 @@ function Step1() {
                   <Check className="w-8 h-8 text-primary" />
                 </div>
                 <h4 className="text-white font-heading font-bold">Store created!</h4>
-                <p className="text-xs text-muted-foreground">app.jesstore.io/store/amara</p>
+                <p className="text-xs text-muted-foreground">jesstore.vercel.app/store/amara</p>
                 <div className="flex gap-2 w-full pt-4">
                   <Button variant="outline" className="flex-1 text-xs h-9 rounded-lg">Copy Link</Button>
                   <Button variant="outline" className="flex-1 text-xs h-9 rounded-lg"><Share2 className="w-3 h-3 mr-2" /> Share</Button>
@@ -188,7 +188,7 @@ function Step3() {
         <MockupFrame className="flex flex-col gap-4 p-4">
           <div className="w-full bg-[#25D366]/10 p-4 rounded-xl border border-[#25D366]/20">
              <div className="text-[10px] text-[#25D366] font-bold uppercase mb-2">WhatsApp share</div>
-             <div className="text-xs text-white">"Here's my store link 🛍️ app.jesstore.io/store/amara"</div>
+             <div className="text-xs text-white">"Here's my store link 🛍️ jesstore.vercel.app/store/amara"</div>
           </div>
           <motion.div
             initial={{ y: 20, opacity: 0 }}

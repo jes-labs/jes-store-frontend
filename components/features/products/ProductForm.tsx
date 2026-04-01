@@ -5,6 +5,10 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { productSchema } from '@/lib/validations/product.schema'
 import { Button } from '@/components/ui/button'
+import { useRouter } from 'next/navigation'
+import { useCreateProduct, useUpdateProduct } from '@/hooks/useProducts'
+import { toast } from 'sonner'
+import { getApiErrorMessage } from '@/lib/utils/handleApiError'
 import {
   Form,
   FormControl,
@@ -35,6 +39,10 @@ interface ProductFormProps {
 }
 
 export function ProductForm({ productId, initialData }: ProductFormProps) {
+  const router = useRouter()
+  const { mutate: createProduct, isPending: isCreating } = useCreateProduct()
+  const { mutate: updateProduct, isPending: isUpdating } = useUpdateProduct(productId ?? '')
+
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
     defaultValues: initialData || {
@@ -62,8 +70,45 @@ export function ProductForm({ productId, initialData }: ProductFormProps) {
   }
 
   function onSubmit(values: ProductFormValues) {
-    console.log(values)
+    const imageUrl = values.images?.[0] ?? ''
+    // Extract bare CID from full IPFS URL, or use the value as-is if already a CID
+    const imageCid = imageUrl.includes('/ipfs/')
+      ? imageUrl.split('/ipfs/').pop()
+      : imageUrl || undefined
+
+    const payload = {
+      product_name: values.name,
+      description: values.description,
+      price: values.price,
+      cost_price: values.costPrice,
+      quantity: values.stock,
+      sku: values.sku,
+      is_active: values.isActive,
+      low_stock_alert: values.lowStockAlert,
+      category_id: /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(values.categoryId ?? '') ? values.categoryId : undefined,
+      image_cid: imageCid,
+    }
+
+    if (productId) {
+      updateProduct(payload, {
+        onSuccess: () => {
+          toast.success('Product updated')
+          router.push('/dashboard/products')
+        },
+        onError: (err) => toast.error(getApiErrorMessage(err)),
+      })
+    } else {
+      createProduct(payload, {
+        onSuccess: () => {
+          toast.success('Product added to catalog')
+          router.push('/dashboard/products')
+        },
+        onError: (err) => toast.error(getApiErrorMessage(err)),
+      })
+    }
   }
+
+  const isPending = isCreating || isUpdating
 
   return (
     <Form {...form}>
@@ -317,8 +362,8 @@ export function ProductForm({ productId, initialData }: ProductFormProps) {
             </Card>
 
             <div className="sticky top-24 space-y-4">
-              <Button type="submit" size="lg" className="w-full h-14 rounded-2xl font-bold tracking-tight text-lg shadow-xl shadow-primary/20">
-                {productId ? 'Update Product' : 'Add to Catalog'}
+              <Button type="submit" size="lg" disabled={isPending} className="w-full h-14 rounded-2xl font-bold tracking-tight text-lg shadow-xl shadow-primary/20">
+                {isPending ? 'Saving…' : productId ? 'Update Product' : 'Add to Catalog'}
               </Button>
               <Button type="button" variant="ghost" className="w-full text-xs font-bold uppercase tracking-widest text-muted-foreground">
                 Discard Changes

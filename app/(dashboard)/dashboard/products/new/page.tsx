@@ -21,9 +21,7 @@ export default function NewProductPage() {
         }
       />
 
-      <div className="max-w-2xl">
-        <ProductForm />
-      </div>
+      <ProductForm />
     </main>
   )
 }

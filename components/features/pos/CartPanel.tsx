@@ -1,11 +1,10 @@
 'use client'
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useCartStore } from '@/store/cartStore'
 import { CartItem } from './CartItem'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -32,9 +31,8 @@ interface CartPanelProps {
 
 export function CartPanel({ onComplete }: CartPanelProps) {
   const { 
-    items, 
-    clear, 
-    subtotal, 
+    items,
+    clear,
     total, 
     itemCount, 
     discountType, 
@@ -58,9 +56,9 @@ export function CartPanel({ onComplete }: CartPanelProps) {
   }
 
   const paymentMethods = [
-    { id: 'cash', label: 'Cash', icon: Banknote },
-    { id: 'bank_transfer', label: 'Transfer', icon: CreditCard },
-    { id: 'crypto', label: 'Crypto', icon: Coins },
+    { id: 'cash', label: 'Cash', icon: Banknote, disabled: true },
+    { id: 'bank_transfer', label: 'Transfer', icon: CreditCard, disabled: true },
+    { id: 'crypto', label: 'Crypto', icon: Coins, disabled: false },
   ]
 
   return (
@@ -197,12 +195,15 @@ export function CartPanel({ onComplete }: CartPanelProps) {
                 return (
                   <button
                     key={method.id}
-                    onClick={() => setPaymentMethod(method.id as any)}
+                    onClick={() => !method.disabled && setPaymentMethod(method.id as any)}
+                    disabled={method.disabled}
                     className={cn(
                       "flex flex-col items-center justify-center gap-1.5 p-3 rounded-2xl border transition-all duration-300",
-                      isActive 
-                        ? "bg-primary/10 border-primary text-primary shadow-[0_0_15px_-5px_hsl(var(--primary))]" 
-                        : "bg-muted/20 border-border/30 text-muted-foreground hover:bg-muted/30 hover:border-border"
+                      method.disabled
+                        ? "opacity-30 cursor-not-allowed bg-muted/10 border-border/20 text-muted-foreground"
+                        : isActive
+                          ? "bg-primary/10 border-primary text-primary shadow-[0_0_15px_-5px_hsl(var(--primary))]"
+                          : "bg-muted/20 border-border/30 text-muted-foreground hover:bg-muted/30 hover:border-border"
                     )}
                   >
                     <Icon size={18} />

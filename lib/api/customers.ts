@@ -1,44 +1,23 @@
 import { apiClient } from './client'
-import { Customer } from '@/types/customer'
-import { ApiResponse, PaginatedResponse } from '@/types/api'
+import { Customer, CustomerFilters } from '@/types/customer'
 
 /**
  * Customer Management Service
+ * All routes are store-scoped: /stores/:storeId/customers/...
  */
 export const customersApi = {
-  /**
-   * List customers for a merchant (paginated)
-   */
-  getCustomers: async (params?: {
-    page?: number;
-    limit?: number;
-    search?: string;
-  }): Promise<ApiResponse<PaginatedResponse<Customer>>> => {
-    const response = await apiClient.get<ApiResponse<PaginatedResponse<Customer>>>('/customers', { params })
-    return response.data
+  createCustomer: async (storeId: string, payload: Partial<Customer>): Promise<Customer> => {
+    const response = await apiClient.post<any>(`/stores/${storeId}/customers`, payload)
+    return response.data?.customer ?? response.data
   },
 
-  /**
-   * Get customer details by ID
-   */
-  getCustomer: async (id: string): Promise<ApiResponse<Customer>> => {
-    const response = await apiClient.get<ApiResponse<Customer>>(`/api/customers/${id}`)
-    return response.data
+  getCustomers: async (storeId: string, params?: CustomerFilters): Promise<Customer[]> => {
+    const response = await apiClient.get<any>(`/stores/${storeId}/customers`, { params })
+    return response.data?.customers ?? response.data
   },
 
-  /**
-   * Update customer profile
-   */
-  updateCustomer: async (id: string, payload: Partial<Customer>): Promise<ApiResponse<Customer>> => {
-    const response = await apiClient.patch<ApiResponse<Customer>>(`/customers/${id}`, payload)
-    return response.data
-  },
-
-  /**
-   * Get customer purchase history
-   */
-  getHistory: async (id: string): Promise<ApiResponse<any>> => {
-    const response = await apiClient.get<ApiResponse<any>>(`/customers/${id}/history`)
-    return response.data
+  getCustomer: async (storeId: string, id: string): Promise<Customer> => {
+    const response = await apiClient.get<any>(`/stores/${storeId}/customers/${id}`)
+    return response.data?.customer ?? response.data
   },
 }

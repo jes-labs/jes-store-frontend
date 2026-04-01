@@ -60,7 +60,7 @@ export default function Step1StoreName() {
           <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 transition-all duration-300">
             <p className="text-xs text-gray-400 mb-1">Your store link will be:</p>
             <div className="flex items-center gap-1 font-mono text-sm">
-                <span className="text-gray-500">jesstore.io/store/</span>
+                <span className="text-gray-500">jesstore.vercel.app/store/</span>
                 <motion.span 
                     key={data.storeSlug}
                     initial={{ opacity: 0.5, y: -2 }}

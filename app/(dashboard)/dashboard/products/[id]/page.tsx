@@ -5,25 +5,29 @@ import { ChevronLeft } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { ProductForm } from '@/components/features/products/ProductForm'
+import { useProduct } from '@/hooks/useProducts'
+import { TableSkeleton } from '@/components/shared/LoadingSkeletons'
 
 export default function EditProductPage() {
   const params = useParams()
   const id = params.id as string
 
-  // In a real app, you would fetch actual data here
-  // Mocking initial data for demonstration
-  const mockInitialData = {
-    name: "Jordan 1 Retro High OG",
-    description: "The classic silhouette that started it all. Premium leather and timeless design.",
-    price: 180,
-    costPrice: 120,
-    stock: 24,
-    sku: "JES-123456",
-    isActive: true,
-    lowStockAlert: 5,
-    categoryId: "footwear-01",
-    images: ["https://images.unsplash.com/photo-1552346154-21d32810aba3?q=80&w=2070&auto=format&fit=crop"],
-  }
+  const { data: product, isLoading, error } = useProduct(id)
+
+  const initialData = product
+    ? {
+        name: product.product_name ?? product.name ?? '',
+        description: product.description ?? '',
+        price: typeof product.price === 'string' ? parseFloat(product.price) : (product.price ?? 0),
+        costPrice: typeof product.cost_price === 'string' ? parseFloat(product.cost_price) : (product.cost_price ?? 0),
+        stock: product.quantity ?? product.stock ?? 0,
+        sku: product.sku ?? '',
+        isActive: product.is_active ?? true,
+        lowStockAlert: product.low_stock_alert ?? product.lowStockAlert ?? 5,
+        categoryId: product.category_id ?? '',
+        images: product.image_cid ? [`https://ipfs.io/ipfs/${product.image_cid}`] : (product.images ?? []),
+      }
+    : undefined
 
   return (
     <div className="space-y-6">
@@ -35,11 +39,19 @@ export default function EditProductPage() {
         </Button>
         <div>
           <h1 className="text-2xl font-bold font-display">Edit Product</h1>
-          <p className="text-sm text-muted-foreground uppercase tracking-widest font-bold text-[10px]">SKU: {mockInitialData.sku}</p>
+          {product && (
+            <p className="text-sm text-muted-foreground uppercase tracking-widest font-bold text-[10px]">SKU: {product.sku}</p>
+          )}
         </div>
       </div>
 
-      <ProductForm productId={id} initialData={mockInitialData} />
+      {isLoading ? (
+        <TableSkeleton />
+      ) : error ? (
+        <div className="text-center py-12 text-muted-foreground">Failed to load product.</div>
+      ) : (
+        <ProductForm productId={id} initialData={initialData} />
+      )}
     </div>
   )
 }

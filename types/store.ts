@@ -12,17 +12,25 @@ export interface StoreSettings {
 
 export interface Store {
   id: string;
-  ownerId: string;
-  name: string;
+  // camelCase (frontend-shaped)
+  ownerId?: string;
+  name?: string;
+  walletAddress?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  // snake_case (backend response)
+  store_name?: string;
+  owner_address?: string;
+  owner_id?: string;
+  created_at?: string;
+  updated_at?: string;
+  // shared
   description?: string;
   logo?: string;
-  walletAddress: string;
-  country: string;
+  country?: string;
   city?: string;
   category?: string;
-  settings: StoreSettings;
-  createdAt: string;
-  updatedAt: string;
+  settings?: Partial<StoreSettings>;
 }
 
 export interface StoreState {
